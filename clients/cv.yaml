@@ -1,0 +1,8 @@
+id: cv
+variant_key: default
+include:
+  experience: [bank-of-america, axcellion, ionq, national-quantum-lab, general-dynamics, umd-fire-qml, munch-industries]
+  projects: [qfirenet, qml-flow, trace, slate]
+  certifications: [microsoft-mlops, github-agentic-ai, ibm-qiskit]
+  sections: [objective, education, experience, publications, projects, skills, honors, extracurricular]
+skill_categories: [Languages, Quantum & AI/ML, Frameworks & Web, Cloud, Data & Tools]

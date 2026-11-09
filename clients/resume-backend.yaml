@@ -1,0 +1,8 @@
+id: resume-backend
+variant_key: backend
+include:
+  experience: [axcellion, bank-of-america, general-dynamics, munch-industries]
+  projects: [trace, slate, enron-rag, smart-retail]
+  certifications: [microsoft-mlops, github-agentic-ai, ibm-qiskit]
+  sections: [education, experience, projects, skills, certifications]
+skill_categories: [Languages, Frameworks & Web, Cloud, Data & Tools, Quantum & AI/ML]

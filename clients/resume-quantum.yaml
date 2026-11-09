@@ -1,0 +1,10 @@
+id: resume-quantum
+variant_key: quantum
+experience_tags: [quantum]
+project_tags: [quantum, research]
+include:
+  experience: [ionq, national-quantum-lab, umd-fire-qml]
+  projects: [qfirenet, qml-flow, sen2fire]
+  certifications: [ibm-qiskit, microsoft-mlops, github-agentic-ai]
+  sections: [education, experience, projects, skills, certifications]
+skill_categories: [Quantum & AI/ML, Languages, Cloud, Data & Tools]

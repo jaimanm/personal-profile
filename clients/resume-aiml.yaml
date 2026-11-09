@@ -1,0 +1,8 @@
+id: resume-aiml
+variant_key: aiml
+include:
+  experience: [ionq, bank-of-america, axcellion, national-quantum-lab]
+  projects: [qfirenet, trace, slate]
+  certifications: [microsoft-mlops, github-agentic-ai, ibm-qiskit]
+  sections: [education, experience, projects, skills, certifications]
+skill_categories: [Quantum & AI/ML, Languages, Frameworks & Web, Cloud, Data & Tools]

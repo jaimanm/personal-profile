@@ -6,6 +6,8 @@ on:
     paths:
       - career.yaml
       - clients/**
+      - scripts/**
+      - requirements.txt
       - index.html
       - .github/workflows/pages.yml
   workflow_dispatch:
@@ -29,10 +31,29 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install generator dependencies
+        run: pip install -r requirements.txt
+
+      - name: Install LaTeX
+        uses: awalsh128/cache-apt-pkgs-action@latest
+        with:
+          packages: texlive-latex-base texlive-latex-extra texlive-fonts-recommended texlive-fonts-extra latexmk
+          version: 1.0
+
+      - name: Generate profile data and PDFs
+        run: python scripts/generate.py --all
+
       - name: Prepare site
         run: |
           mkdir -p _site
           cp career.yaml _site/career.yaml
+          cp generated/public-profile.json _site/public-profile.json
+          cp generated/*.pdf _site/ 2>/dev/null || true
           cp index.html _site/index.html
 
       - name: Configure Pages

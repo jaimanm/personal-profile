@@ -1,14 +1,334 @@
 # Public personal profile source of truth.
 # Keep only information you are comfortable publishing publicly.
 profile:
-  name: ""
-  headline: ""
-  location: ""
-  website: ""
-  links: []
+  name: Jaiman Munshi
+  headline: Quantum Computing Researcher & ML Engineer
+  description: Aspiring quantum software engineer and machine learning enthusiast building at the intersection of AI, quantum computing, and software engineering.
+  email: jaimanmunshi@gmail.com
+  location: College Park, MD
+  website: https://jaimanm.github.io
+  github: https://github.com/jaimanm
+  linkedin: https://linkedin.com/in/jaimanmunshi
+  profile_image: https://jaimanm.github.io/resources/profile-avatar.jpeg
+  typed_lines:
+    - Quantum Computing Researcher
+    - Machine Learning Engineer
+    - Software Developer
+    - AI & Quantum Enthusiast
 
-experience: []
-projects: []
-education: []
-certifications: []
-skills: []
+education:
+  - id: umd
+    institution: University of Maryland
+    location: College Park, MD
+    degree: B.S. in Computer Science - Machine Learning
+    gpa: "3.94"
+    graduation: May 2027
+    minors:
+      - Quantum Science & Engineering
+      - Statistics
+    coursework:
+      - Quantum Computing
+      - Artificial Intelligence
+      - Algorithms
+      - Data Structures
+      - Computer Systems
+      - Data Science
+
+experience:
+  - id: axcellion
+    organization: Axcellion.ai
+    role: Senior Software Engineer
+    start: Jan 2026
+    end: Present
+    tags: [backend, aiml, portfolio]
+    bullets:
+      - id: axcellion-rag
+        default: Engineered a RAG intelligence engine mapping 100k+ nodes and relationships in Neo4j, using AWS S3 and RDS for document, metadata, and embedding storage, and Lambda/EventBridge automation for daily sync and 768-dim vectorization in under 9 seconds.
+        variants:
+          backend: Engineered a RAG intelligence engine mapping 100k+ nodes and relationships in Neo4j, using AWS S3 and RDS for document, metadata, and embedding storage, and Lambda/EventBridge automation for daily sync and 768-dim vectorization in under 9 seconds.
+          aiml: Engineered a RAG intelligence engine mapping over 100k nodes and relationships in a Neo4j knowledge graph, using AWS Lambda and EventBridge to automate daily data source synchronization and 768-dim vectorization in under 9 seconds.
+      - id: axcellion-ingestion
+        default: Architected a multithreaded ingestion pipeline that processed 108,000+ regulatory filings totaling 80+ GB at 9.1 docs/sec with zero failures, using AWS EC2 to bypass source rate limits and maximize transfer bandwidth during high-speed bulk loads.
+      - id: axcellion-production
+        default: Led deployment of a microservice-oriented RAG application to operationalize the knowledge pipeline across services, driving production readiness and faster iteration through AI-assisted engineering workflows.
+
+  - id: ionq
+    organization: IonQ
+    role: Project Lead
+    start: Aug 2025
+    end: Present
+    tags: [quantum, aiml, portfolio]
+    bullets:
+      - id: ionq-team
+        default: Directed a 12-engineer team to deliver QFireNet from prototype to published arXiv research, formalizing Agile execution, code review standards, and experiment documentation across a multi-author quantum ML workflow.
+      - id: ionq-mlops
+        default: Architected a config-driven MLOps pipeline featuring a dynamic registry pattern for swappable quantum circuits, models, and loss functions, enabling rapid, reproducible experimentation without underlying codebase modification.
+      - id: ionq-hpc
+        default: Managed SLURM-orchestrated training on Zaratan A100/H100 nodes with PyTorch and PennyLane Lightning GPU, standardizing hyperparameter sweeps and centralized model-weight tracking.
+
+  - id: bank-of-america
+    organization: Bank of America
+    role: Software Engineering Intern
+    start: Jun 2026
+    end: Aug 2026
+    tags: [backend, aiml, portfolio]
+    bullets:
+      - id: boa-agent
+        default: Engineered a custom AI agent integrated with database and spreadsheet tools to automate manual dividend processing, delivering a conversational chat interface to operations and support teams.
+      - id: boa-migration
+        default: Architected the migration of a legacy enterprise fund database application to a modern React and Spring Boot stack, developing REST APIs and integrating Ping OIDC for secure authentication.
+      - id: boa-performance
+        default: Optimized backend SQL to improve response time by 3x, wrote comprehensive unit tests for frontend and backend, and accelerated feature delivery using custom GitHub Copilot workflows and MCP servers.
+      - id: boa-patent
+        default: Filed a patent for a multi-layer distributed streaming congestion relief platform modeling data drift and staleness to identify and block downstream processing bottlenecks.
+
+  - id: national-quantum-lab
+    organization: National Quantum Laboratory
+    role: Quantum Computing Research Intern
+    start: Jul 2025
+    end: Aug 2025
+    tags: [quantum, aiml, portfolio]
+    bullets:
+      - id: nql-mnist
+        default: Achieved >99% accuracy on MNIST using a hybrid quantum approach matching published benchmarks, validating the hand-built model on IonQ quantum processors and the PennyLane Lightning simulator.
+        variants:
+          aiml: Achieved >99% accuracy on MNIST using a hybrid machine learning approach matching published benchmarks, leveraging PyTorch to validate the model architecture.
+      - id: nql-qfirenet
+        default: Established the foundational architecture for the QFireNet wildfire segmentation model, executing the first GPU-accelerated training cycles to validate a hybrid quantum approach to wildfire detection.
+
+  - id: general-dynamics
+    organization: General Dynamics IT
+    role: Backend Engineer
+    start: Feb 2025
+    end: May 2025
+    tags: [backend, aiml, portfolio]
+    bullets:
+      - id: gdit-rag
+        default: Built an agentic RAG pipeline over 500,000 Enron emails across 150 accounts using Qdrant embeddings and a Neo4j knowledge graph, delivering sub-6-second query responses for entity-level investigation and summarization.
+      - id: gdit-app
+        default: Delivered a React and Flask application that operationalized real-time email intelligence through conversational search, contextual summaries, and relationship-aware insights.
+
+  - id: umd-fire-qml
+    organization: UMD FIRE QML Research
+    role: Research Fellow
+    start: Aug 2024
+    end: Present
+    tags: [quantum, aiml, cv, portfolio]
+    bullets:
+      - id: fire-qgan
+        default: Built QGAN and QCBM quantum generative model architectures in Qiskit to simulate particle momentum distributions for Future Circular Collider experiments.
+      - id: fire-metrics
+        default: Achieved a best KL divergence of 0.096 and classical discriminator ROC AUC of 0.64 by optimizing circuit ansatz structures and hyperparameters on the Qiskit Aer backend.
+
+  - id: munch-industries
+    organization: Munch Industries
+    role: Software Engineering Intern
+    start: Jun 2023
+    end: Jan 2025
+    tags: [backend, portfolio]
+    bullets:
+      - id: munch-ui
+        default: Delivered 8,000+ lines of code for a responsive touchscreen UI and full-stack infrastructure, enabling customization of 288 drink combinations and serving over 100 customers daily.
+      - id: munch-migration
+        default: Reduced maintenance complexity and development overhead by over 60% by migrating a split Svelte and Express.js architecture to a unified SvelteKit stack.
+      - id: munch-cloud
+        default: Architected cloud monitoring that streamed edge-device logs and telemetry to AWS CloudWatch with real-time incident alerting through Amazon SNS.
+
+projects:
+  - id: qfirenet
+    title: "QFireNet: Quantum-Enhanced Wildfire Segmentation"
+    date: Aug 2025 - Present
+    tags: [quantum, aiml, research, featured]
+    technologies: [PyTorch, PennyLane, Jupyter, HPC, Bash]
+    description: Quantum-enhanced wildfire segmentation on multispectral satellite imagery using hybrid classical-quantum deep learning.
+    links:
+      - label: Paper
+        url: https://arxiv.org/abs/2607.14160
+      - label: Code
+        url: https://github.com/jaimanm/qfirenet
+    bullets:
+      - id: qfirenet-model
+        default: Replaced the deep U-Net bottleneck with QuFeX and QB-Net variational quantum circuits to improve high-dimensional spectral feature extraction on the Sen2Fire dataset.
+      - id: qfirenet-shift
+        default: Addressed extreme class imbalance and a severe 5.3x train/test aerosol domain shift, with the quantum QB-Net outperforming the classical U-Net baseline.
+      - id: qfirenet-gradients
+        default: Resolved early NaN gradient collapse with staged feature-map compression and normalized angle embeddings before quantum execution.
+
+  - id: qml-flow
+    title: QML Flow
+    date: Ongoing
+    tags: [quantum, aiml, portfolio]
+    technologies: [Python, PyTorch, PennyLane, MLflow]
+    description: Framework for reproducible hybrid quantum-classical machine learning experiments.
+    links:
+      - label: Code
+        url: https://github.com/jaimanm/qml-flow
+    bullets:
+      - id: qml-flow-modules
+        default: Architected a framework encapsulating quantum circuits as auto-batched PyTorch modules, automating precision casting, CUDA placement, and custom parameter initialization.
+      - id: qml-flow-cli
+        default: Engineered an interactive CLI with MLflow integration to orchestrate experiments, serialize hybrid checkpoints, and monitor training telemetry.
+
+  - id: trace
+    title: "Trace: Parkinson's Monitoring"
+    date: Apr 2025
+    tags: [backend, aiml, health, featured, portfolio]
+    technologies: [React, Next.js, Flask, Supabase, OpenCV, XGBoost, MediaPipe]
+    description: Health-tech platform for remote Parkinson's disease monitoring.
+    links:
+      - label: Demo
+        url: https://devpost.com/software/trace-34zsjm
+      - label: Code
+        url: https://github.com/jaimanm/trace-backend
+    bullets:
+      - id: trace-model
+        default: Trained an XGBoost classifier on 1,056 samples to achieve 91% Parkinson's severity classification accuracy across five motor-skill metrics.
+      - id: trace-platform
+        default: Built a full-stack patient management portal with React, Next.js, Flask, and Supabase, processing tracing assessments in under two seconds.
+
+  - id: slate
+    title: "Slate: Interactive AI Whiteboard"
+    date: Ongoing
+    tags: [backend, aiml, portfolio]
+    technologies: [React, TypeScript, WebSockets, Gemini API, Scene Graphs]
+    description: Collaborative AI whiteboard for real-time tutoring and brainstorming.
+    bullets:
+      - id: slate-streaming
+        default: Architecting a collaborative AI whiteboard using React and tldraw with WebSocket streaming of PCM audio and canvas state to the Gemini Multimodal Live API.
+      - id: slate-context
+        default: Designing an infinite-canvas context engine that synchronizes user-AI viewport parameters and enables tool calls to generate SVG shapes.
+
+  - id: enron-rag
+    title: Agentic RAG Pipeline
+    date: Feb - May 2025
+    tags: [backend, aiml, featured, portfolio]
+    technologies: [React, Flask, Qdrant, Neo4j]
+    description: Agentic RAG pipeline for entity-aware investigation and summarization over the Enron email corpus.
+    links:
+      - label: Organization
+        url: https://www.gdit.com/
+    bullets:
+      - id: enron-rag-pipeline
+        default: Processed 500,000 emails across 150 accounts using Qdrant embeddings and a Neo4j knowledge graph, delivering sub-6-second query responses.
+
+  - id: sen2fire
+    title: Sen2Fire Wildfire Detection
+    date: Aug 2025 - Present
+    tags: [quantum, aiml, featured, portfolio]
+    technologies: [PyTorch, PennyLane, HPC, Jupyter]
+    description: U-Net-based segmentation model combining classical deep learning with quantum variational circuits for wildfire detection.
+    links:
+      - label: Code
+        url: https://github.com/jaimanm/wildfire-detection
+
+  - id: captcha-plus
+    title: Captcha Plus
+    date: Feb 2024
+    tags: [aiml, featured, portfolio]
+    technologies: [OpenCV, MediaPipe, Flask]
+    description: Real-time webcam gesture authentication replacing traditional CAPTCHA with interactive hand-symbol authentication.
+    links:
+      - label: Code
+        url: https://github.com/jaimanm/captcha-plus
+
+  - id: gradpath
+    title: GradPath
+    date: Jan 2026
+    tags: [backend, portfolio]
+    technologies: [HTML, CSS, JavaScript]
+    description: Interactive directed graph for visualizing graduate degree progress, courses, and prerequisites.
+    links:
+      - label: Live Demo
+        url: https://jaimanm.github.io/GradPath
+      - label: Code
+        url: https://github.com/jaimanm/GradPath
+
+  - id: exoplanet-classification
+    title: Exoplanet Classification
+    date: 2024
+    tags: [aiml, portfolio]
+    technologies: [TensorFlow, Keras, NumPy]
+    description: Deep-learning model for classifying exoplanets from astronomical data.
+    links:
+      - label: Code
+        url: https://github.com/jaimanm/exoplanet-classification
+
+  - id: wordle-bot
+    title: Strategic Wordle Bot
+    date: 2024
+    tags: [aiml, portfolio]
+    technologies: [Python, Jupyter, NumPy]
+    description: Information-theoretic Wordle solver that maximizes guessing efficiency.
+    links:
+      - label: Code
+        url: https://github.com/jaimanm/wordle-bot
+
+  - id: smart-retail
+    title: Smart Retail System
+    date: Jun 2023 - Jan 2025
+    tags: [backend, portfolio]
+    technologies: [SvelteKit, Express.js, AWS]
+    description: Full-stack touchscreen UI supporting 288 drink combinations and cloud monitoring infrastructure for active retail deployments.
+    links:
+      - label: Munch Industries
+        url: https://munch-industries.com/
+      - label: Orble Tea
+        url: https://orble-tea.com/
+
+skills:
+  - category: Languages
+    items: [Python, Java, TypeScript, C, C#, SQL, HTML/CSS, Bash, OCaml, Assembly (x86-64)]
+  - category: Quantum & AI/ML
+    items: [PennyLane, Qiskit, PyTorch, TensorFlow, Scikit-learn, MLflow, XGBoost, OpenCV, NumPy, Pandas, Gemini API]
+  - category: Frameworks & Web
+    items: [React, Next.js, SvelteKit, Spring Boot, Flask, Express.js, WebSockets]
+  - category: Cloud, Data & Tools
+    items: [AWS, Azure, Neo4j, Qdrant, Supabase, SQL Server, HPC, SLURM, Git, MLOps]
+
+certifications:
+  - id: microsoft-mlops
+    name: "Microsoft Certified: Machine Learning Operations Engineer Associate"
+    date: August 2026
+    tags: [backend, aiml, cv]
+  - id: github-agentic-ai
+    name: "GitHub Certified: Agentic AI Developer"
+    date: August 2026
+    tags: [backend, aiml, cv]
+  - id: ibm-qiskit
+    name: IBM Certified V2.X Qiskit Developer - Associate
+    date: Jan 2026
+    tags: [quantum, cv]
+
+publications:
+  - id: qfirenet-paper
+    title: "QFireNet: Quantum-Enhanced Wildfire Segmentation"
+    venue: arXiv:2607.14160
+    date: July 2026
+    role: First Author
+    url: https://arxiv.org/abs/2607.14160
+
+honors:
+  - id: eagle-scout
+    title: Eagle Scout
+    organization: Boy Scouts of America
+    date: Jan 2022
+    tags: [cv, portfolio]
+  - id: stackholm
+    title: Stackholm Junior Water Prize
+    description: Top 3 finalist for an autonomous aquatic surface skimmer to control algal blooms.
+    date: 2022
+    tags: [portfolio]
+
+extracurricular:
+  - id: maryland-manzar
+    organization: Maryland Manzar
+    role: Competitive Dancer
+    start: Sep 2024
+    end: Present
+    bullets:
+      - Traveled and competed in national collegiate Bollywood fusion dance competitions, contributing to the team's peak rank of 14th in the nation.
+  - id: club-tennis
+    organization: Club Tennis Team
+    role: Recreational Player
+    start: Sep 2024
+    end: Present
