@@ -18,7 +18,7 @@ DATA = ROOT / "career.yaml"
 CLIENTS = ROOT / "clients"
 OUT = ROOT / "generated"
 MANIFEST = OUT / "manifest.json"
-TEMPLATE_VERSION = "2"
+TEMPLATE_VERSION = "3"
 
 PREAMBLE = r"""
 \documentclass[letterpaper,10pt]{article}
@@ -98,6 +98,8 @@ def heading(data: dict) -> str:
 
 
 def render_list(items: list[str]) -> str:
+    if not items:
+        return ""
     return "\\resumeItemListStart\n" + "\n".join(
         rf"\resumeItem{{{escape(item)}}}" for item in items
     ) + "\n\\resumeItemListEnd"
