@@ -1,0 +1,14 @@
+# Public personal profile source of truth.
+# Keep only information you are comfortable publishing publicly.
+profile:
+  name: ""
+  headline: ""
+  location: ""
+  website: ""
+  links: []
+
+experience: []
+projects: []
+education: []
+certifications: []
+skills: []
