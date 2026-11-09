@@ -6,6 +6,7 @@ on:
     paths:
       - career.yaml
       - clients/**
+      - index.html
       - .github/workflows/pages.yml
   workflow_dispatch:
 
@@ -32,7 +33,7 @@ jobs:
         run: |
           mkdir -p _site
           cp career.yaml _site/career.yaml
-          cp README.md _site/index.html
+          cp index.html _site/index.html
 
       - name: Configure Pages
         uses: actions/configure-pages@v5
