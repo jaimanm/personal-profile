@@ -1,2 +1,4 @@
 # Generated artifacts are rebuilt by GitHub Actions.
 generated/
+__pycache__/
+*.py[cod]
