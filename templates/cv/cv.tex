@@ -1,0 +1,180 @@
+%-------------------------
+% CV in LaTeX
+% Based off of: Jake's Resume (https://github.com/sb2nov/resume)
+% Extended with: Awesome-CV sections (https://github.com/posquit0/Awesome-CV)
+% License : MIT
+%------------------------
+
+\documentclass[letterpaper,11pt]{article}
+
+\usepackage{latexsym}
+\usepackage[empty]{fullpage}
+\usepackage{titlesec}
+\usepackage{marvosym}
+\usepackage[usenames,dvipsnames]{color}
+\usepackage{verbatim}
+\usepackage{enumitem}
+\usepackage[hidelinks]{hyperref}
+\usepackage{fancyhdr}
+\usepackage[english]{babel}
+\usepackage{tabularx}
+\usepackage{etoolbox}  % for toggles
+\input{glyphtounicode}
+
+
+%----------FONT OPTIONS----------
+% sans-serif
+% \usepackage[sfdefault]{FiraSans}
+% \usepackage[sfdefault]{roboto}
+% \usepackage[sfdefault]{noto-sans}
+% \usepackage[default]{sourcesanspro}
+
+% serif
+% \usepackage{CormorantGaramond}
+% \usepackage{charter}
+
+
+\pagestyle{fancy}
+\fancyhf{} % clear all header and footer fields
+\fancyfoot{}
+\renewcommand{\headrulewidth}{0pt}
+\renewcommand{\footrulewidth}{0pt}
+
+% Adjust margins
+\addtolength{\oddsidemargin}{-0.5in}
+\addtolength{\evensidemargin}{-0.5in}
+\addtolength{\textwidth}{1in}
+\addtolength{\topmargin}{-.5in}
+\addtolength{\textheight}{1.0in}
+
+\urlstyle{same}
+
+\raggedbottom
+\raggedright
+\setlength{\tabcolsep}{0in}
+
+% Sections formatting
+\titleformat{\section}{
+  \vspace{-4pt}\scshape\raggedright\large
+}{}{0em}{}[\color{black}\titlerule \vspace{-5pt}]
+
+% Ensure that generated pdf is machine readable/ATS parsable
+\pdfgentounicode=1
+
+%-------------------------
+% Custom commands
+\newcommand{\resumeItem}[1]{
+  \item\small{
+    {#1 \vspace{-2pt}}
+  }
+}
+
+\newcommand{\resumeSubheading}[4]{
+  \vspace{-2pt}\item
+    \begin{tabular*}{0.97\textwidth}[t]{l@{\extracolsep{\fill}}r}
+      \textbf{#1} & #2 \\
+      \textit{\small#3} & \textit{\small #4} \\
+    \end{tabular*}\vspace{-7pt}
+}
+
+\newcommand{\resumeSubSubheading}[2]{
+    \item
+    \begin{tabular*}{0.97\textwidth}{l@{\extracolsep{\fill}}r}
+      \textit{\small#1} & \textit{\small #2} \\
+    \end{tabular*}\vspace{-7pt}
+}
+
+\newcommand{\resumeProjectHeading}[2]{
+    \item
+    \begin{tabular*}{0.97\textwidth}{l@{\extracolsep{\fill}}r}
+      \small#1 & #2 \\
+    \end{tabular*}\vspace{-7pt}
+}
+
+\newcommand{\resumeAwardItem}[4]{
+    \item
+    \begin{tabular*}{0.97\textwidth}{l@{\extracolsep{\fill}}r}
+      \small{\textbf{#1}\ifstrempty{#2}{}{, #2}} & \textit{\small #3 \enspace #4} \\
+    \end{tabular*}\vspace{-4pt}
+}
+
+\newcommand{\resumeSubItem}[1]{\resumeItem{#1}\vspace{-4pt}}
+
+\renewcommand\labelitemii{$\vcenter{\hbox{\tiny$\bullet$}}$}
+
+\newcommand{\resumeSubHeadingListStart}{\begin{itemize}[leftmargin=0.15in, label={}]}
+\newcommand{\resumeSubHeadingListEnd}{\end{itemize}}
+\newcommand{\resumeItemListStart}{\begin{itemize}}
+\newcommand{\resumeItemListEnd}{\end{itemize}\vspace{-5pt}}
+
+
+%==========================================================================
+%  SECTION TOGGLES
+%  Set \toggletrue{...} to SHOW a section, \togglefalse{...} to HIDE it.
+%==========================================================================
+\newtoggle{objective}
+\newtoggle{education}
+\newtoggle{skills}
+\newtoggle{experience}
+\newtoggle{projects}
+\newtoggle{extracurricular}
+\newtoggle{honors}
+\newtoggle{certificates}
+\newtoggle{presentation}
+\newtoggle{publications}
+\newtoggle{committees}
+
+\toggletrue{objective}
+\toggletrue{education}
+\togglefalse{skills}
+\toggletrue{experience}
+\toggletrue{projects}
+\toggletrue{extracurricular}
+\toggletrue{honors}
+\togglefalse{certificates}
+\togglefalse{presentation}
+\toggletrue{publications}
+\togglefalse{committees}
+
+% I will enable skills after moving it to the correct order later.
+
+%===========================================================================
+%%%%%%  CV STARTS HERE  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%===========================================================================
+
+\begin{document}
+
+%----------HEADING----------
+% Set your first and last name here. These are also used to generate the PDF filename.
+\newcommand{\firstname}{Jaiman}
+\newcommand{\lastname}{Munshi}
+
+\begin{center}
+    \textbf{\Huge \scshape \firstname{} \lastname{}} \\ \vspace{1pt}
+    \small \href{mailto:jaimanmunshi@gmail.com}{\underline{jaimanmunshi@gmail.com}} $|$
+    \href{https://linkedin.com/in/jaimanmunshi}{\underline{linkedin.com/in/jaimanmunshi}} $|$
+    \href{https://github.com/jaimanm}{\underline{github.com/jaimanm}}
+\end{center}
+
+
+%----------SECTIONS----------
+% Each section is imported from its own file in the cv-sections/ directory.
+% Add toggles for optional sections below (e.g. \toggletrue{section_name})
+
+\iftoggle{objective}{\input{cv-sections/objective.tex}}{}
+\iftoggle{education}{\input{cv-sections/education.tex}}{}
+\iftoggle{experience}{\input{cv-sections/experience.tex}}{}
+\iftoggle{publications}{\input{cv-sections/publications.tex}}{}
+\iftoggle{projects}{\input{cv-sections/projects.tex}}{}
+\toggletrue{skills}
+% Add remaining toggles here:
+\iftoggle{skills}{\input{cv-sections/skills.tex}}{}
+\iftoggle{honors}{\input{cv-sections/honors.tex}}{}
+\iftoggle{extracurricular}{\input{cv-sections/extracurricular.tex}}{}
+\iftoggle{certificates}{\input{cv-sections/certificates.tex}}{}
+\iftoggle{presentation}{\input{cv-sections/presentation.tex}}{}
+\iftoggle{committees}{\input{cv-sections/committees.tex}}{}
+
+
+%-------------------------------------------
+\end{document}

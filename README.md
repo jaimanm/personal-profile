@@ -14,8 +14,10 @@ On changes to the source data or client rules, GitHub Actions:
 3. Generates `public-profile.json` for the portfolio site.
 4. Publishes the YAML, JSON, and PDFs through GitHub Pages.
 
-Local generation requires Python and the dependencies in `requirements.txt`.
-If `latexmk` is installed, PDFs are built as well:
+The PDF generator uses the exact modular multi-resume template from Resumake
+and the existing CV template. Local generation requires Python and the
+dependencies in `requirements.txt`. If `latexmk` is installed, PDFs are built
+as well:
 
 ```bash
 pip install -r requirements.txt

@@ -1,12 +1,11 @@
 #!/usr/bin/env python3
-"""Generate deterministic public data and PDF source files from career.yaml."""
+"""Generate resumes, a CV, and public profile data from career.yaml."""
 
 from __future__ import annotations
 
 import argparse
 import hashlib
 import json
-import re
 import shutil
 import subprocess
 from pathlib import Path
@@ -18,34 +17,9 @@ DATA = ROOT / "career.yaml"
 CLIENTS = ROOT / "clients"
 OUT = ROOT / "generated"
 MANIFEST = OUT / "manifest.json"
-TEMPLATE_VERSION = "3"
-
-PREAMBLE = r"""
-\documentclass[letterpaper,10pt]{article}
-\usepackage[empty]{fullpage}
-\usepackage{titlesec}
-\usepackage{marvosym}
-\usepackage[usenames,dvipsnames]{color}
-\usepackage{enumitem}
-\usepackage[hidelinks]{hyperref}
-\usepackage{fancyhdr}
-\usepackage[english]{babel}
-\usepackage{tabularx}
-\usepackage[normalem]{ulem}
-\input{glyphtounicode}
-\pagestyle{fancy}\fancyhf{}\renewcommand{\headrulewidth}{0pt}\renewcommand{\footrulewidth}{0pt}
-\addtolength{\oddsidemargin}{-0.5in}\addtolength{\evensidemargin}{-0.5in}
-\addtolength{\textwidth}{1in}\addtolength{\topmargin}{-.75in}\addtolength{\textheight}{1.5in}
-\urlstyle{same}\raggedbottom\raggedright\setlength{\tabcolsep}{0in}\pdfgentounicode=1
-\titleformat{\section}{\vspace{-4pt}\scshape\raggedright\large}{}{0em}{}[\color{black}\titlerule \vspace{-5pt}]
-\newcommand{\resumeItem}[1]{\item\small{{#1\vspace{-2pt}}}}
-\newcommand{\resumeSubheading}[4]{\vspace{-2pt}\item\begin{tabular*}{0.97\textwidth}[t]{l@{\extracolsep{\fill}}r}\textbf{#1} & #2 \\\textit{\small#3} & \textit{\small #4}\end{tabular*}\vspace{-7pt}}
-\newcommand{\resumeProjectHeading}[2]{\vspace{-2pt}\item\begin{tabular*}{0.97\textwidth}[t]{l@{\extracolsep{\fill}}r}\small#1 & #2\end{tabular*}\vspace{-7pt}}
-\newcommand{\resumeSubHeadingListStart}{\begin{itemize}[leftmargin=0.15in, label={}]}
-\newcommand{\resumeSubHeadingListEnd}{\end{itemize}}
-\newcommand{\resumeItemListStart}{\begin{itemize}}
-\newcommand{\resumeItemListEnd}{\end{itemize}\vspace{-5pt}}
-"""
+RESUME_TEMPLATE = ROOT / "templates" / "resumake" / "modular-multi" / "resume_preamble.tex"
+CV_TEMPLATE = ROOT / "templates" / "cv" / "cv_preamble.tex"
+TEMPLATE_VERSION = "4"
 
 
 def load_yaml(path: Path) -> dict:
@@ -54,7 +28,6 @@ def load_yaml(path: Path) -> dict:
 
 
 def escape(value: object) -> str:
-    text = str(value)
     replacements = {
         "\\": r"\textbackslash{}",
         "&": r"\&",
@@ -67,20 +40,7 @@ def escape(value: object) -> str:
         "~": r"\textasciitilde{}",
         "^": r"\textasciicircum{}",
     }
-    return "".join(replacements.get(char, char) for char in text)
-
-
-def url_text(url: str) -> str:
-    return rf"\href{{{url}}}{{\uline{{{escape(url.removeprefix('https://'))}}}}}"
-
-
-def selected(records: list[dict], ids: list[str]) -> list[dict]:
-    by_id = {record["id"]: record for record in records}
-    return [by_id[item] for item in ids if item in by_id]
-
-
-def bullet_text(bullet: dict, key: str) -> str:
-    return bullet.get("variants", {}).get(key, bullet["default"])
+    return "".join(replacements.get(char, char) for char in str(value))
 
 
 def fingerprint(value: object) -> str:
@@ -88,108 +48,216 @@ def fingerprint(value: object) -> str:
     return hashlib.sha256(payload).hexdigest()
 
 
+def selected(records: list[dict], ids: list[str]) -> list[dict]:
+    by_id = {record["id"]: record for record in records}
+    missing = [item for item in ids if item not in by_id]
+    if missing:
+        raise ValueError(f"Unknown record IDs: {', '.join(missing)}")
+    return [by_id[item] for item in ids]
+
+
+def bullet_text(bullet: dict, key: str) -> str:
+    return bullet.get("variants", {}).get(key, bullet["default"])
+
+
 def heading(data: dict) -> str:
     profile = data["profile"]
-    return (
-        rf"\begin{{center}}\textbf{{\Huge \scshape {escape(profile['name'])}}} \\ \vspace{{1pt}}"
-        rf"\small \href{{mailto:{profile['email']}}}{{\uline{{{escape(profile['email'])}}}}} $|$ "
-        rf"{url_text(profile['linkedin'])} $|$ {url_text(profile['website'])}\end{{center}}"
+    return "\n".join(
+        [
+            r"\begin{center}",
+            rf"\textbf{{\Huge \scshape {escape(profile['name'])}}} \\ \vspace{{1pt}}",
+            rf"\small \href{{mailto:{profile['email']}}}{{\underline{{{escape(profile['email'])}}}}} $|$",
+            rf"\href{{{profile['linkedin']}}}{{\underline{{linkedin.com/in/jaimanmunshi}}}} $|$",
+            rf"\href{{{profile['website']}}}{{\underline{{jaimanm.github.io}}}}%",
+            r"\end{center}",
+        ]
     )
 
 
-def render_list(items: list[str]) -> str:
+def item_list(items: list[str]) -> str:
     if not items:
         return ""
-    return "\\resumeItemListStart\n" + "\n".join(
-        rf"\resumeItem{{{escape(item)}}}" for item in items
-    ) + "\n\\resumeItemListEnd"
+    return "\n".join(
+        [
+            r"\resumeItemListStart",
+            *[rf"\resumeItem{{{escape(item)}}}" for item in items],
+            r"\resumeItemListEnd",
+        ]
+    )
+
+
+def role_block(role: dict, key: str) -> str:
+    bullets = item_list([bullet_text(item, key) for item in role.get("bullets", [])])
+    return "\n".join(
+        [
+            r"\resumeProjectHeading",
+            rf"{{\textbf{{{escape(role['organization'])}}} $|$ \emph{{{escape(role['role'])}}}}}{{{escape(role['start'])} -- {escape(role['end'])}}}",
+            bullets,
+        ]
+    )
+
+
+def project_block(project: dict, key: str, heading_name: str = "Projects") -> str:
+    title = escape(project["title"])
+    if project.get("links"):
+        title = rf"\href{{{project['links'][0]['url']}}}{{\underline{{{title}}}}}"
+    bullets = item_list([bullet_text(item, key) for item in project.get("bullets", [])])
+    return "\n".join(
+        [
+            r"\resumeProjectHeading",
+            rf"{{\textbf{{{title}}} $|$ \emph{{{escape(', '.join(project.get('technologies', [])))}}}}}{{{escape(project.get('date', ''))}}}",
+            bullets,
+        ]
+    )
+
+
+def skills_block(data: dict, client: dict) -> str:
+    rows = [
+        rf"\textbf{{{escape(skill['category'])}}}: {escape(', '.join(skill['items']))} \\"
+        for skill in data["skills"]
+        if skill["category"] in client.get("skill_categories", [])
+    ]
+    return "\n".join(
+        [
+            r"\begin{itemize}[leftmargin=0.15in, label={}]",
+            r"\small{\item{",
+            *rows,
+            r"}}",
+            r"\end{itemize}",
+        ]
+    )
+
+
+def common_education(data: dict) -> str:
+    education = data["education"][0]
+    return "\n".join(
+        [
+            r"\section{Education}",
+            r"\resumeSubHeadingListStart",
+            rf"\resumeSubheading{{{escape(education['institution'])}}}{{{escape(education['location'])}}}{{{escape(education['degree'])} $|$ GPA: {escape(education['gpa'])}}}{{Graduation: {escape(education['graduation'])}}}",
+            item_list(
+                [
+                    "Minors: " + ", ".join(education["minors"]),
+                    "Relevant Coursework: " + ", ".join(education["coursework"]),
+                ]
+            ),
+            r"\resumeSubHeadingListEnd",
+        ]
+    )
 
 
 def render_resume(data: dict, client: dict) -> str:
-    include = client["include"]
     key = client.get("variant_key", "default")
-    education = data["education"][0]
-    lines = [PREAMBLE, r"\begin{document}", heading(data), r"\section{Education}", r"\resumeSubHeadingListStart"]
-    lines.append(
-        rf"\resumeSubheading{{{escape(education['institution'])}}}{{{escape(education['location'])}}}"
-        rf"{{{escape(education['degree'])} $|$ GPA: {escape(education['gpa'])}}}{{Graduation: {escape(education['graduation'])}}}"
-    )
-    lines.append(render_list([
-        "Minors: " + ", ".join(education["minors"]),
-        "Relevant Coursework: " + ", ".join(education["coursework"]),
-    ]))
-    lines += [r"\resumeSubHeadingListEnd", r"\section{Experience}", r"\resumeSubHeadingListStart"]
-    for role in selected(data["experience"], include["experience"]):
-        bullets = [bullet_text(item, key) for item in role["bullets"]]
-        lines.append(rf"\resumeProjectHeading{{\textbf{{{escape(role['organization'])}}} $|$ \emph{{{escape(role['role'])}}}}}{{{escape(role['start'])} -- {escape(role['end'])}}}")
-        lines.append(render_list(bullets))
-    lines += [r"\resumeSubHeadingListEnd", r"\section{Projects}", r"\resumeSubHeadingListStart"]
-    for project in selected(data["projects"], include["projects"]):
-        title = project["title"]
-        if project.get("links"):
-            title = rf"\href{{{project['links'][0]['url']}}}{{\uline{{{escape(title)}}}}}"
-        lines.append(rf"\resumeProjectHeading{{\textbf{{{title}}} $|$ \emph{{{escape(', '.join(project['technologies']))}}}}}{{{escape(project['date'])}}}")
-        lines.append(render_list([bullet_text(item, key) for item in project.get("bullets", [])]))
-    lines += [r"\resumeSubHeadingListEnd", r"\section{Technical Skills}", r"\begin{itemize}[leftmargin=0.15in, label={}]", r"\small{\item{"]
-    for skill in data["skills"]:
-        if skill["category"] in client.get("skill_categories", []):
-            lines.append(rf"\textbf{{{escape(skill['category'])}}}: {escape(', '.join(skill['items']))} \\")
-    lines += [r"}}", r"\end{itemize}", r"\end{document}"]
-    return "\n".join(lines)
+    include = client["include"]
+    experiences = selected(data["experience"], include["experience"])
+    projects = selected(data["projects"], include["projects"])
+    certifications = selected(data["certifications"], include.get("certifications", []))
+    sections = [
+        RESUME_TEMPLATE.read_text(),
+        r"\begin{document}",
+        heading(data),
+        common_education(data),
+        r"\section{Experience}",
+        r"\resumeSubHeadingListStart",
+        *[role_block(role, key) for role in experiences],
+        r"\resumeSubHeadingListEnd",
+        r"\section{Projects}",
+        r"\resumeSubHeadingListStart",
+        *[project_block(project, key) for project in projects],
+        r"\resumeSubHeadingListEnd",
+        r"\section{Certifications}",
+        r"\resumeSubHeadingListStart",
+        *[
+            rf"\resumeProjectHeading{{\textbf{{{escape(cert['name'])}}}}}{{{escape(cert['date'])}}}"
+            for cert in certifications
+        ],
+        r"\resumeSubHeadingListEnd",
+        r"\section{Technical Skills}",
+        skills_block(data, client),
+        r"\end{document}",
+    ]
+    return "\n".join(section for section in sections if section)
 
 
 def render_cv(data: dict, client: dict) -> str:
-    include = client["include"]
     key = client.get("variant_key", "default")
-    education = data["education"][0]
-    lines = [PREAMBLE.replace("10pt", "11pt"), r"\begin{document}", heading(data)]
-    objective = data["profile"]["description"] + " Pursuing the next generation of systems bridging quantum software and machine learning."
-    lines += [r"\section{Objective}", rf"\small{{{escape(objective)}}}", r"\section{Education}", r"\resumeSubHeadingListStart"]
-    lines.append(rf"\resumeSubheading{{{escape(education['institution'])}}}{{{escape(education['location'])}}}{{{escape(education['degree'])} $|$ GPA: {escape(education['gpa'])}}}{{Graduation: {escape(education['graduation'])}}}")
-    lines.append(render_list(["Minors: " + ", ".join(education["minors"]), "Relevant Coursework: " + ", ".join(education["coursework"])]))
-    lines += [r"\resumeSubHeadingListEnd", r"\section{Experience}", r"\resumeSubHeadingListStart"]
-    for role in selected(data["experience"], include["experience"]):
-        lines.append(rf"\resumeProjectHeading{{\textbf{{{escape(role['organization'])}}} $|$ \emph{{{escape(role['role'])}}}}}{{{escape(role['start'])} -- {escape(role['end'])}}}")
-        lines.append(render_list([bullet_text(item, key) for item in role["bullets"]]))
-    lines += [r"\resumeSubHeadingListEnd", r"\section{Publications}", r"\resumeSubHeadingListStart"]
-    for paper in data["publications"]:
-        lines.append(rf"\resumeProjectHeading{{\textbf{{\href{{{paper['url']}}}{{\uline{{{escape(paper['title'])}}}}}}} $|$ \emph{{{escape(paper['role'])}}}}}{{{escape(paper['date'])}}}")
-    lines += [r"\resumeSubHeadingListEnd", r"\section{Technical Projects}", r"\resumeSubHeadingListStart"]
-    for project in selected(data["projects"], include["projects"]):
-        lines.append(rf"\resumeProjectHeading{{\textbf{{{escape(project['title'])}}} $|$ \emph{{{escape(', '.join(project['technologies']))}}}}}{{{escape(project['date'])}}}")
-        lines.append(render_list([bullet_text(item, key) for item in project.get("bullets", [])]))
-    lines += [r"\resumeSubHeadingListEnd", r"\section{Technical Skills}", r"\begin{itemize}[leftmargin=0.15in, label={}]", r"\small{\item{"]
-    for skill in data["skills"]:
-        if skill["category"] in client.get("skill_categories", []):
-            lines.append(rf"\textbf{{{escape(skill['category'])}}}: {escape(', '.join(skill['items']))} \\")
-    lines += [r"}}", r"\end{itemize}", r"\section{Honors \& Awards}", r"\resumeSubHeadingListStart"]
-    for honor in data["honors"]:
-        lines.append(rf"\resumeProjectHeading{{\textbf{{{escape(honor['title'])}}} $|$ \emph{{{escape(honor.get('organization', ''))}}}}}{{{escape(honor['date'])}}}")
-    lines += [r"\resumeSubHeadingListEnd", r"\section{Extracurricular Activities}", r"\resumeSubHeadingListStart"]
-    for item in data["extracurricular"]:
-        lines.append(rf"\resumeProjectHeading{{\textbf{{{escape(item['organization'])}}} $|$ \emph{{{escape(item['role'])}}}}}{{{escape(item['start'])} -- {escape(item['end'])}}}")
-    lines += [r"\resumeSubHeadingListEnd", r"\end{document}"]
+    include = client["include"]
+    experiences = selected(data["experience"], include["experience"])
+    projects = selected(data["projects"], include["projects"])
+    lines = [
+        CV_TEMPLATE.read_text(),
+        r"\begin{document}",
+        heading(data),
+        r"\section{Objective}",
+        rf"\small{{{escape(data['profile']['description'])} First author of published quantum ML research (arXiv:2607.14160) and an IBM Certified Qiskit Developer.}}",
+        common_education(data),
+        r"\section{Experience}",
+        r"\resumeSubHeadingListStart",
+        *[role_block(role, key) for role in experiences],
+        r"\resumeSubHeadingListEnd",
+        r"\section{Publications}",
+        r"\resumeSubHeadingListStart",
+    ]
+    lines.extend(
+        rf"\resumeProjectHeading{{\textbf{{\href{{{paper['url']}}}{{\underline{{{escape(paper['title'])}}}}}}} $|$ \emph{{{escape(paper['role'])}}}}}{{{escape(paper['date'])}}}"
+        for paper in data["publications"]
+    )
+    lines.extend([r"\resumeSubHeadingListEnd", r"\section{Technical Projects}", r"\resumeSubHeadingListStart"])
+    lines.extend(project_block(project, key) for project in projects)
+    lines.extend([r"\resumeSubHeadingListEnd", r"\section{Technical Skills}", skills_block(data, client)])
+    lines.extend([r"\section{Honors \& Awards}", r"\resumeSubHeadingListStart"])
+    lines.extend(
+        rf"\resumeAwardItem{{{escape(honor['title'])}}}{{{escape(honor.get('organization', ''))}}}{{}}{{{escape(honor['date'])}}}"
+        for honor in data["honors"]
+        if "cv" in honor.get("tags", [])
+    )
+    lines.extend([r"\resumeSubHeadingListEnd", r"\section{Extracurricular Activities}", r"\resumeSubHeadingListStart"])
+    lines.extend(
+        rf"\resumeProjectHeading{{\textbf{{{escape(item['organization'])}}} $|$ \emph{{{escape(item['role'])}}}}}{{{escape(item['start'])} -- {escape(item['end'])}}}"
+        for item in data["extracurricular"]
+    )
+    lines.extend([r"\resumeSubHeadingListEnd", r"\end{document}"])
     return "\n".join(lines)
 
 
 def public_projection(data: dict) -> dict:
     profile = data["profile"]
-    projects = []
-    for project in data["projects"]:
-        projects.append({
-            "id": project["id"], "title": project["title"], "category": " ".join(project.get("tags", [])),
-            "tags": project.get("tags", []), "description": project["description"],
-            "tech": project.get("technologies", []), "links": [{"text": link["label"], "url": link["url"]} for link in project.get("links", [])],
-            "date": project.get("date", ""), "featured": "featured" in project.get("tags", []),
-        })
-    skills = [{"category": item["category"], "icon": "•", "colorClass": "ionq-teal", "items": [{"name": value, "percent": 85} for value in item["items"]]} for item in data["skills"]]
-    achievements = [{"title": item["title"], "icon": "★", "description": item.get("description", item["title"]), "year": item["date"], "colorClass": "matrix-green"} for item in data["honors"]]
     return {
         "personal": {**profile, "profileImage": profile.get("profile_image")},
         "hero": {"typedLines": profile.get("typed_lines", [])},
-        "projects": projects,
-        "skills": skills,
-        "achievements": achievements,
+        "projects": [
+            {
+                "id": project["id"],
+                "title": project["title"],
+                "category": " ".join(project.get("tags", [])),
+                "tags": project.get("tags", []),
+                "description": project["description"],
+                "tech": project.get("technologies", []),
+                "links": [{"text": link["label"], "url": link["url"]} for link in project.get("links", [])],
+                "date": project.get("date", ""),
+                "featured": "featured" in project.get("tags", []),
+            }
+            for project in data["projects"]
+        ],
+        "skills": [
+            {
+                "category": skill["category"],
+                "icon": "•",
+                "colorClass": "ionq-teal",
+                "items": [{"name": value, "percent": 85} for value in skill["items"]],
+            }
+            for skill in data["skills"]
+        ],
+        "achievements": [
+            {
+                "title": honor["title"],
+                "icon": "★",
+                "description": honor.get("description", honor["title"]),
+                "year": honor["date"],
+                "colorClass": "matrix-green",
+            }
+            for honor in data["honors"]
+        ],
     }
 
 
@@ -203,6 +271,7 @@ def main() -> None:
     OUT.mkdir(exist_ok=True)
     manifest = json.loads(MANIFEST.read_text()) if MANIFEST.exists() else {}
     names = args.client or (["resume-quantum", "resume-backend", "resume-aiml", "cv"] if args.all or not args.public else [])
+
     for name in names:
         client = load_yaml(CLIENTS / f"{name}.yaml")
         document = render_cv(data, client) if name == "cv" else render_resume(data, client)
@@ -213,8 +282,12 @@ def main() -> None:
         if entry.get("fingerprint") != digest or not tex.exists():
             tex.write_text(document)
         if shutil.which("latexmk") and (entry.get("fingerprint") != digest or not pdf.exists()):
-            subprocess.run(["latexmk", "-pdf", "-interaction=nonstopmode", "-halt-on-error", f"-output-directory={OUT}", str(tex)], check=True)
+            subprocess.run(
+                ["latexmk", "-pdf", "-interaction=nonstopmode", "-halt-on-error", f"-output-directory={OUT}", str(tex)],
+                check=True,
+            )
         manifest[name] = {"fingerprint": digest, "tex": tex.name, "pdf": pdf.name if pdf.exists() else None}
+
     if args.public or args.all or not args.client:
         projection = public_projection(data)
         (OUT / "public-profile.json").write_text(json.dumps(projection, indent=2) + "\n")

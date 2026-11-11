@@ -220,6 +220,11 @@ projects:
     links:
       - label: Code
         url: https://github.com/jaimanm/wildfire-detection
+    bullets:
+      - id: sen2fire-model
+        default: Built a U-Net-based wildfire segmentation model for multispectral satellite imagery, integrating quantum variational circuits at the model bottleneck with PennyLane.
+      - id: sen2fire-training
+        default: Used HPC GPU acceleration and staged training to reduce experimentation time while evaluating hybrid classical-quantum feature extraction.
 
   - id: captcha-plus
     title: Captcha Plus
