@@ -44,6 +44,12 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y texlive-latex-base texlive-latex-extra texlive-fonts-recommended texlive-fonts-extra latexmk
 
+      - name: Restore generated outputs
+        uses: actions/cache@v4
+        with:
+          path: generated
+          key: profile-build-${{ runner.os }}-${{ hashFiles('career.yaml', 'clients/**', 'scripts/**', 'templates/**', 'requirements.txt') }}
+
       - name: Generate profile data and PDFs
         run: python scripts/generate.py --all
 
