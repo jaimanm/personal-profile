@@ -19,7 +19,7 @@ OUT = ROOT / "generated"
 MANIFEST = OUT / "manifest.json"
 RESUME_TEMPLATE = ROOT / "templates" / "resumake" / "modular-multi" / "resume_preamble.tex"
 CV_TEMPLATE = ROOT / "templates" / "cv" / "cv_preamble.tex"
-TEMPLATE_VERSION = "4"
+TEMPLATE_VERSION = "5"
 
 
 def load_yaml(path: Path) -> dict:
@@ -86,8 +86,9 @@ def item_list(items: list[str]) -> str:
     )
 
 
-def role_block(role: dict, key: str) -> str:
-    bullets = item_list([bullet_text(item, key) for item in role.get("bullets", [])])
+def role_block(role: dict, key: str, max_bullets: int | None = None) -> str:
+    source_bullets = role.get("bullets", [])
+    bullets = item_list([bullet_text(item, key) for item in source_bullets[:max_bullets]])
     return "\n".join(
         [
             r"\resumeProjectHeading",
@@ -97,11 +98,12 @@ def role_block(role: dict, key: str) -> str:
     )
 
 
-def project_block(project: dict, key: str, heading_name: str = "Projects") -> str:
+def project_block(project: dict, key: str, max_bullets: int | None = None) -> str:
     title = escape(project["title"])
     if project.get("links"):
         title = rf"\href{{{project['links'][0]['url']}}}{{\underline{{{title}}}}}"
-    bullets = item_list([bullet_text(item, key) for item in project.get("bullets", [])])
+    source_bullets = project.get("bullets", [])
+    bullets = item_list([bullet_text(item, key) for item in source_bullets[:max_bullets]])
     return "\n".join(
         [
             r"\resumeProjectHeading",
@@ -149,6 +151,7 @@ def common_education(data: dict) -> str:
 def render_resume(data: dict, client: dict) -> str:
     key = client.get("variant_key", "default")
     include = client["include"]
+    max_bullets = client.get("max_bullets")
     experiences = selected(data["experience"], include["experience"])
     projects = selected(data["projects"], include["projects"])
     certifications = selected(data["certifications"], include.get("certifications", []))
@@ -159,11 +162,11 @@ def render_resume(data: dict, client: dict) -> str:
         common_education(data),
         r"\section{Experience}",
         r"\resumeSubHeadingListStart",
-        *[role_block(role, key) for role in experiences],
+        *[role_block(role, key, max_bullets) for role in experiences],
         r"\resumeSubHeadingListEnd",
         r"\section{Projects}",
         r"\resumeSubHeadingListStart",
-        *[project_block(project, key) for project in projects],
+        *[project_block(project, key, max_bullets) for project in projects],
         r"\resumeSubHeadingListEnd",
         r"\section{Certifications}",
         r"\resumeSubHeadingListStart",
@@ -184,6 +187,7 @@ def render_cv(data: dict, client: dict) -> str:
     include = client["include"]
     experiences = selected(data["experience"], include["experience"])
     projects = selected(data["projects"], include["projects"])
+    certifications = selected(data["certifications"], include.get("certifications", []))
     lines = [
         CV_TEMPLATE.read_text(),
         r"\begin{document}",
@@ -210,6 +214,11 @@ def render_cv(data: dict, client: dict) -> str:
         rf"\resumeAwardItem{{{escape(honor['title'])}}}{{{escape(honor.get('organization', ''))}}}{{}}{{{escape(honor['date'])}}}"
         for honor in data["honors"]
         if "cv" in honor.get("tags", [])
+    )
+    lines.extend([r"\resumeSubHeadingListEnd", r"\section{Certificates}", r"\resumeSubHeadingListStart"])
+    lines.extend(
+        rf"\resumeProjectHeading{{\textbf{{{escape(cert['name'])}}}}}{{{escape(cert['date'])}}}"
+        for cert in certifications
     )
     lines.extend([r"\resumeSubHeadingListEnd", r"\section{Extracurricular Activities}", r"\resumeSubHeadingListStart"])
     lines.extend(

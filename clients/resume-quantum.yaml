@@ -8,3 +8,4 @@ include:
   certifications: [ibm-qiskit, microsoft-mlops, github-agentic-ai]
   sections: [education, experience, projects, skills, certifications]
 skill_categories: [Quantum & AI/ML, Languages, Cloud, Data & Tools]
+max_bullets: 2
